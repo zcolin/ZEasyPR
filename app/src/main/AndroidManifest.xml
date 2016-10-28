@@ -1,4 +1,4 @@
-<manifest package="com.fosung.platerecognizer"
+<manifest package="com.usedemo"
           xmlns:android="http://schemas.android.com/apk/res/android">
 
     <uses-feature android:name="android.hardware.camera"/>
@@ -13,13 +13,13 @@
         android:screenOrientation="portrait"
         android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
         <activity
-            android:name="com.aiseminar.InitActivity">
+            android:name="com.usedemo.InitActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
         <activity
-            android:name="com.aiseminar.EasyPRActivity"/>
+            android:name="com.usedemo.EasyPRActivity"/>
     </application>
 </manifest>

@@ -5,7 +5,7 @@
  * date     16-7-15 下午4:41
  **********************************************************/
 
-package com.aiseminar.permission;
+package com.usedemo.permission;
 
 import android.Manifest;
 import android.app.Activity;

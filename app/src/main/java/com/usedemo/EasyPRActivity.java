@@ -1,4 +1,4 @@
-package com.aiseminar;
+package com.usedemo;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -10,7 +10,6 @@ import android.widget.Toast;
 
 import com.fosung.libeasypr.view.EasyPRPreSurfaceView;
 import com.fosung.libeasypr.view.EasyPRPreView;
-import com.fosung.platerecognizer.R;
 
 /**
  * 车牌识别页面

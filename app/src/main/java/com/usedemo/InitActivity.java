@@ -1,13 +1,13 @@
-package com.aiseminar;
+package com.usedemo;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Toast;
 
-import com.aiseminar.permission.PermissionHelper;
-import com.aiseminar.permission.PermissionsManager;
-import com.aiseminar.permission.PermissionsResultAction;
+import com.usedemo.permission.PermissionHelper;
+import com.usedemo.permission.PermissionsManager;
+import com.usedemo.permission.PermissionsResultAction;
 
 public class InitActivity extends Activity {
     @Override
