@@ -15,7 +15,6 @@ import com.aiseminar.EasyPR.PlateRecognizer;
 import com.fosung.libeasypr.EasyPrBiz;
 import com.fosung.libeasypr.EasyPrPath;
 import com.fosung.libeasypr.util.BitmapUtil;
-import com.fosung.libeasypr.util.ScreenUtil;
 
 import java.io.File;
 import java.io.IOException;
@@ -204,9 +203,9 @@ public class EasyPRPreSurfaceView extends SurfaceView implements SurfaceHolder.C
 
             pictureCallback = new Camera.PictureCallback() {
                 public void onPictureTaken(byte[] data, Camera camera) {
-                    Bitmap map = BitmapUtil.decodeBitmap(data, getWidth() / 2, getHeight() / 2);
-                    float scaleX = (float) map.getWidth() / (float) ScreenUtil.getScreenWidth(context);
-                    float scaleY = (float) map.getHeight() / (float) ScreenUtil.getScreenHeight(context);
+                    Bitmap map = BitmapUtil.decodeBitmap(data, getWidth(), getHeight());
+                    float scaleX = (float) map.getWidth() / getWidth();
+                    float scaleY = (float) map.getHeight() / getHeight();
 
                     String[] paths = new String[4];
                     try {
