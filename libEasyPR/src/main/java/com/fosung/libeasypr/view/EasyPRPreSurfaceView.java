@@ -1,5 +1,6 @@
 package com.fosung.libeasypr.view;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -10,6 +11,7 @@ import android.os.AsyncTask;
 import android.util.AttributeSet;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.widget.Toast;
 
 import com.aiseminar.EasyPR.PlateRecognizer;
 import com.fosung.libeasypr.EasyPrBiz;
@@ -112,7 +114,9 @@ public class EasyPRPreSurfaceView extends SurfaceView implements SurfaceHolder.C
             }
 
             isRecognized = false;
-            mCamera.takePicture(shutterCallback, rawCallback, pictureCallback);
+            if (mCamera != null) {
+                mCamera.takePicture(shutterCallback, rawCallback, pictureCallback);
+            }
         }
     }
 
@@ -125,19 +129,26 @@ public class EasyPRPreSurfaceView extends SurfaceView implements SurfaceHolder.C
         }
 
         if (null == mCamera) {
-            mCamera = Camera.open();
-
-            Camera.Parameters parameters = mCamera.getParameters();
-            parameters.setPictureFormat(ImageFormat.JPEG);
-            // parameters.setPictureSize(surfaceView.getWidth(),
-            // surfaceView.getHeight()); // 部分定制手机，无法正常识别该方法。
-            // parameters.setFlashMode(Parameters.FLASH_MODE_TORCH);//闪光灯
-            parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);// 1连续对焦
-            parameters.setRotation(90);
-            mCamera.setParameters(parameters);
-            mCamera.setDisplayOrientation(90);
-            reStartPreView();
-            mCamera.cancelAutoFocus();// 2如果要实现连续的自动对焦，这一句必须加上
+            try {
+                mCamera = Camera.open();
+                Camera.Parameters parameters = mCamera.getParameters();
+                parameters.setPictureFormat(ImageFormat.JPEG);
+                // parameters.setPictureSize(surfaceView.getWidth(),
+                // surfaceView.getHeight()); // 部分定制手机，无法正常识别该方法。
+                // parameters.setFlashMode(Parameters.FLASH_MODE_TORCH);//闪光灯
+                parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);// 1连续对焦
+                parameters.setRotation(90);
+                mCamera.setParameters(parameters);
+                mCamera.setDisplayOrientation(90);
+                reStartPreView();
+                mCamera.cancelAutoFocus();// 2如果要实现连续的自动对焦，这一句必须加上
+            } catch (Exception e) {
+                Toast.makeText(context, "摄像头开启失败, 可能是没有获取到摄像头权限,请检查.", Toast.LENGTH_SHORT)
+                     .show();
+                if (context instanceof Activity) {
+                    ((Activity) context).finish();
+                }
+            }
         } else {
             reStartPreView();
         }
@@ -167,11 +178,13 @@ public class EasyPRPreSurfaceView extends SurfaceView implements SurfaceHolder.C
      * 重新开始识别
      */
     private void reStartPreView() {
-        try {
-            mCamera.setPreviewDisplay(getHolder());
-            mCamera.startPreview();
-        } catch (IOException e) {
-            e.printStackTrace();
+        if (mCamera != null) {
+            try {
+                mCamera.setPreviewDisplay(getHolder());
+                mCamera.startPreview();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -203,6 +216,10 @@ public class EasyPRPreSurfaceView extends SurfaceView implements SurfaceHolder.C
 
             pictureCallback = new Camera.PictureCallback() {
                 public void onPictureTaken(byte[] data, Camera camera) {
+                    if (mCamera == null) {
+                        return;
+                    }
+
                     Bitmap map = BitmapUtil.decodeBitmap(data, getWidth(), getHeight());
                     float scaleX = (float) map.getWidth() / getWidth();
                     float scaleY = (float) map.getHeight() / getHeight();
@@ -246,19 +263,21 @@ public class EasyPRPreSurfaceView extends SurfaceView implements SurfaceHolder.C
 
     @Override
     public void surfaceChanged(SurfaceHolder holder, int format, int w, int h) {
-        try {
-            // 实现自动对焦
-            mCamera.autoFocus(new Camera.AutoFocusCallback() {
-                @Override
-                public void onAutoFocus(boolean success, Camera arg1) {
-                    if (success) {
-                        reStartPreView();
-                        mCamera.cancelAutoFocus();// 只有加上了这一句，才会自动对焦。
+        if (mCamera != null) {
+            try {
+                // 实现自动对焦
+                mCamera.autoFocus(new Camera.AutoFocusCallback() {
+                    @Override
+                    public void onAutoFocus(boolean success, Camera arg1) {
+                        if (success) {
+                            reStartPreView();
+                            mCamera.cancelAutoFocus();// 只有加上了这一句，才会自动对焦。
+                        }
                     }
-                }
-            });
-        } catch (Exception e) {
-            e.printStackTrace();
+                });
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -285,7 +304,7 @@ public class EasyPRPreSurfaceView extends SurfaceView implements SurfaceHolder.C
                     System.out.println(results[i]);
                 }
             }
-            
+
             return getCorrectText(results);
         }
 
@@ -306,7 +325,7 @@ public class EasyPRPreSurfaceView extends SurfaceView implements SurfaceHolder.C
                 recognizedListener.onRecognized(str);
             }
 
-            if (isOnRecognizedRestart) {
+            if (isOnRecognizedRestart && mCamera != null) {
                 mCamera.startPreview();
             }
         }
