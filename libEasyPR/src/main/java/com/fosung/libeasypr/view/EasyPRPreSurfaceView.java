@@ -312,6 +312,7 @@ public class EasyPRPreSurfaceView extends SurfaceView implements SurfaceHolder.C
         protected void onPreExecute() {
             super.onPreExecute();
             progressDialog.show();
+            progressDialog.setCancelable(false);
             progressDialog.setMessage("正在识别……");
         }
 
