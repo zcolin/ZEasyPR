@@ -216,8 +216,14 @@ public class EasyPRPreSurfaceView extends SurfaceView implements SurfaceHolder.C
 
             pictureCallback = new Camera.PictureCallback() {
                 public void onPictureTaken(byte[] data, Camera camera) {
-                    if (mCamera == null) {
+                    if (mCamera == null || getContext() == null || ((Activity) getContext()).isFinishing()) {
                         return;
+                    }
+                    
+                    if (progressDialog != null) {
+                        progressDialog.show();
+                        progressDialog.setCancelable(false);
+                        progressDialog.setMessage("正在识别……");
                     }
 
                     Bitmap map = BitmapUtil.decodeBitmap(data, getWidth(), getHeight());
@@ -248,8 +254,15 @@ public class EasyPRPreSurfaceView extends SurfaceView implements SurfaceHolder.C
                         pictureTakenListener.onPictureTaken(paths);
                     }
 
+                    if (getContext() == null || ((Activity) getContext()).isFinishing()) {
+                        return;
+                    }
+
                     new RecognizeTask().execute(0);
-                    mCamera.stopPreview();
+                    if (mCamera != null) {
+                        mCamera.stopPreview();
+                    }
+
                 }
             };
             getHolder().addCallback(this);
@@ -311,9 +324,6 @@ public class EasyPRPreSurfaceView extends SurfaceView implements SurfaceHolder.C
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            progressDialog.show();
-            progressDialog.setCancelable(false);
-            progressDialog.setMessage("正在识别……");
         }
 
         @Override
