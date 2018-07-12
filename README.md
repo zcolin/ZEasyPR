@@ -16,6 +16,6 @@ allprojects {
 ####在App中的gradle中加入
 ```
   dependencies {
-	compile 'com.github.zcolin:zcolin_EasyPRLib:1.0.9'
+	compile 'com.github.zcolin:zcolin_EasyPRLib:1.1.2'
 }
 ```
